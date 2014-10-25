@@ -192,16 +192,6 @@ class DatabaseMysql extends PDO implements DatabaseInterface {
         return $query;//parent::exec($query);
     }
 
-    public function update($table, $camp, $value, $condition = '') {
-        $query = "UPDATE {$table} SET {$camp} = '{$value}'";
-        if ($condition !== '') {
-            $query .= " WHERE " . $condition;
-        }
-        $query .= ";";
-        return parent::exec($query);
->>>>>>> origin/master
-    }
-
     public function delete($table, $camp, $id) {
         $query = "DELETE FROM {$table} WHERE {$camp} = '{$id}';";
         return parent::exec($query);
