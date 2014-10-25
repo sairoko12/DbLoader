@@ -1,0 +1,26 @@
+{
+    "databases" : {
+        "system" : {
+            "type" : "mysql",
+            "user" : "root",
+            "password" : "root",
+            "host" : "127.0.0.1",
+            "database" : "admindb"
+        },
+        "agenda" : {
+            "extends" : "system",
+            "database" : "testing"
+        }
+    },
+    "loader_files" : {
+        "config" : [
+            "config",
+            "database"
+        ],
+        "db" : [
+            "database_interface",
+            "mysql",
+            "connections"
+        ]
+    }
+}
