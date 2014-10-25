@@ -1,4 +1,5 @@
 <?php
+
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
 //Iniciamos archivos
@@ -14,3 +15,4 @@ $loader->run();
 $correos = Connections::get('system');# -> select() -> from('parametros') -> fetchAll();
 
 echo '<pre>' . print_r($correos->update('parametros',array('name' => 'algo', 'otra' => 'qwqw'), 'id = 1'), 1) . '</pre>';
+
