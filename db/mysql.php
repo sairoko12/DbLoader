@@ -42,4 +42,5 @@ class Mysql extends BuilderSql {
     public function db(){
         return $this->pdo;
     }
+
 }
