@@ -1,26 +1,28 @@
 {
     "databases" : {
         "system" : {
-            "type" : "mysql",
+            "driver" : "mysql",
             "user" : "root",
             "password" : "root",
             "host" : "127.0.0.1",
-            "database" : "admindb"
+            "port" : "3306",
+            "database" : "boxpay"
         },
         "agenda" : {
             "extends" : "system",
-            "database" : "testing"
+            "database" : "agenda"
         }
     },
-    "loader_files" : {
+    "loader_class" : {
         "config" : [
-            "config",
-            "database"
+            "Base",
+            "Database"
         ],
         "db" : [
-            "database_interface",
-            "mysql",
-            "connections"
+            "BuilderSql",
+            "Connections",
+            "Mysql",
+            "Oracle"
         ]
     }
 }

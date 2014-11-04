@@ -1,15 +1,15 @@
 <?php
 
+ini_set('error_reporting', E_ALL | E_NOTICE | E_STRICT);
+ini_set('display_errors', '1');
+ini_set('track_errors', 'On');
+
 //Iniciamos archivos
 require 'loader.php';
-$loader = new LoaderDb();
+$loader = new AdminDB();
 $loader->run();
 //-------------------
 
-$pos = Connections::get('system') -> select() -> from('parametros') -> fetchRow();
+echo '<pre>' . print_r(Connections::get('system')->db(),1) .'</pre>';
 
-echo '<pre>' . print_r($pos, 1) . '</pre>';
-
-$correos = Connections::get('agenda') -> select() -> from('correos') -> fetchAll();
-
-echo '<pre>' . print_r($correos, 1) . '</pre>';
+echo '<pre>' . print_r(Connections::get('agenda')->select()->from('usuarios')->fetchAll(),1) .'</pre>';

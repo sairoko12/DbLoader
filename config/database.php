@@ -24,6 +24,10 @@ class Databases extends ArrayIterator {
             }
         }
     }
+    
+    public function __destruct() {
+    
+    }
 
     public function register() {
         return (object) $this->databases;

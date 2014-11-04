@@ -1,3 +1,3 @@
 daketConnection
 ===============
-Warning: This code is beta, only for use personal
+Pequeño framework para gestionar bases de datos en PHP
