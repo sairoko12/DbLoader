@@ -1,7 +1,7 @@
 DbLoader
 ===============
 
-### ==== Advertensia el codigo sigue en fase beta aun hay funciones que pueden provocar errores fatales. ====
+### ==== Advertencia el codigo sigue en fase beta aun hay funciones que pueden provocar errores fatales. ====
 
 Pequeño framework para gestionar bases de datos en PHP
 
@@ -11,4 +11,4 @@ Pequeño framework para gestionar bases de datos en PHP
 1. PHP version 5.5
 2. Extension PDO -- aqui es importante tambien verificar el driver para la base de datos que seleccionemos.
 
-## [Visit my website!](http://daket.nixiweb.com)
+#### [Visit the website!](http://daket.nixiweb.com/dbloader/)
