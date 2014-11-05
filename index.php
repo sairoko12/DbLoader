@@ -11,5 +11,5 @@ $loader = new AdminDB();
 $loader->run();
 //-------------------
 
-echo '<pre>' . print_r(Connections::get('system')->db(),1) .'</pre>';
-echo '<pre>' . print_r(Connections::get('agenda')->select()->from('usuarios')->fetchAll(),1) .'</pre>';
+echo '<pre>' . print_r(Connections::get('testing')->select()->from('correos')->where('id = 4')->fetchRow()->email,1) .'</pre>';
+//echo '<pre>' . print_r(Connections::get('agenda')->select()->from('usuarios')->fetchAll(),1) .'</pre>';

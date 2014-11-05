@@ -7,7 +7,6 @@
  */
 
 class BuilderSql {
-    private $type_database;
     private $camps;
     private $from;
     private $wheres;
@@ -16,16 +15,54 @@ class BuilderSql {
     private $sortBy;
     private $groupBy;
     private $joins;
+    private $driver;
+    protected $db;
     
-    public function __construct($driver) {
-        $this->type_database = $driver;
-        //If your database required special query add more case
-        switch ($this->type_database) {
-            default:
+    public function __construct(PDO $db) {
+        $this->db = $db;
+        $this->driver = $this->db->getAttribute(PDO::ATTR_DRIVER_NAME);
+        
+        /**
+         * Aqui se puede agregar nuevos cases para modificar los parametros que necesites para generar tus querys de acuerdo a la base de datos que estes utilizando.
+         * Ejemplo: case 'oci': para oracle, case 'ibm': para DB2
+        */
+        switch ($this->driver) {
+            case 'mysql': default: 
                 $this->wheres = array('and' => array(), 'or' => array());
                 $this->joins = array('inner' => array(), 'left' => array(), 'right' => array(), 'full' => array());
                 break;
         }
+    }
+    
+    public function fetchAll() {
+        $query = $this->assemble();
+        if ($query) {
+            $sth = $this->db->prepare($query);
+            $sth -> execute();
+            
+            $result = $sth -> fetchAll(PDO::FETCH_OBJ);
+            
+            return (is_array($result)) ? $result : false;
+        }
+
+        return false;
+    }
+
+    public function fetchRow() {
+        $query = $this->assemble();
+        
+        if ($query) {
+            $obj = $this->db->query($query);
+            
+            if (is_object($obj)) {
+                $result = $obj->fetch(PDO::FETCH_OBJ);
+                return (is_object($result)) ? $result : false;
+            }
+            
+            return false;
+        }
+
+        return false;
     }
 
     public function select($camps = array('*')) {
@@ -88,12 +125,12 @@ class BuilderSql {
         return $this;
     }
 
-    public function addWhere($where) {
+    public function where($where) {
         $this->wheres['and'][] = $where;
         return $this;
     }
 
-    public function addOrWhere($orWhere) {
+    public function orWhere($orWhere) {
         $this->wheres ['or'][] = $orWhere;
         return $this;
     }
@@ -120,35 +157,10 @@ class BuilderSql {
     }
 
     public function insert($table, $data = array()) {
-        $query = "INSERT INTO {$table} (" . implode(',', array_keys($data)) . ") VALUES ";
-
-        foreach ($data AS $camp => $value) {
-            if (is_array($value)) {
-                $query .= "(" . implode(',', $value) . ")";
-            } else {
-                $query .= "{$value}";
-            }
-        }
-
-        /* if ($multiple){
-          $records = array();
-          foreach ($values AS $value) {
-          foreach ($value AS &$val) {
-          $val = "'" . $val . "'";
-          }
-
-          $records[] .= "(" . implode(',',$value) . ")";
-          }
-          } else {
-          foreach ($values AS &$val) {
-          $val = "'" . $val . "'";
-          }
-          }
-
-          $query = "INSERT INTO {$table} (" . implode(',',$camps) . ") VALUES (" . implode(',', (($multiple) ? $records : $values)) . ");"; */
-        //$result = parent::prepare($query);
-        //$result ->execute(array($table, implode(',',$camps)));
-        return $query; //parent::lastInsertId();
+        $query = "INSERT INTO {$table}(" . implode(',', array_keys($data)) . ") VALUES(" . implode(',', array_map(function($value){ return (is_numeric($value)) ? "{$value}" : "'{$value}'"; }, $data)) . ");";
+        $result = $this->db()->prepare($query);
+        $result->execute();
+        return $this->db()->lastInsertId();
     }
 
     public function array_map_assoc($callback, $array) {
@@ -162,23 +174,31 @@ class BuilderSql {
     }
 
     public function update($table, $data, $condition = '') {
-        $query = "UPDATE {$table} SET ";
-
-        $query .= implode(',', $this->array_map_assoc(function($k, $v) {
-                    return "{$k} = '{$v}'";
-                }, $data));
-
+        $query = "UPDATE {$table} SET " . implode(',', $this->array_map_assoc(function($k, $v){ return (is_numeric($v)) ? "{$k} = {$v}" : "{$k} = '{$v}'"; }, $data));
+        
         if ($condition !== '') {
             $query .= " WHERE " . $condition;
         }
 
         $query .= ";";
-        return $query; //parent::exec($query);
+        
+        $result = $this->db()->prepare($query);
+        
+        try {
+            return $result->execute();
+        } catch (PDOException $e) {
+            return $e->getMessage();
+        }
     }
 
-    public function delete($table, $camp, $id) {
-        $query = "DELETE FROM {$table} WHERE {$camp} = '{$id}';";
-        return parent::exec($query);
+    public function delete($table, $data) {
+        $query = "DELETE FROM {$table} WHERE " . implode(' AND ', $this->array_map_assoc(function($k, $v){ return (is_numeric($v)) ? "({$k} = {$v})" : "({$k} = '{$v}')"; }, $data)) . ";";
+        
+        try {
+            return $this->db->exec($query);
+        } catch (PDOException $e) {
+            return $e->getMessage();
+        }
     }
 
     public function assemble() {
@@ -249,5 +269,9 @@ class BuilderSql {
         $query .= ";";
 
         return $query;
+    }
+    
+    public function db(){
+        return $this->db;
     }
 }

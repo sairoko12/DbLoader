@@ -8,24 +8,24 @@
  */
 
 class Connections {
-    protected static $connects;
+    protected static $connects = array();
     
     /**
      * You can add more cases for any database type please see: http://mx2.php.net/manual/en/pdo.drivers.php for more info.
      */
     public static function register_connections() {
-        foreach (Base::config()->databases AS $key => $value) {
-            switch ($value->driver) {
+        foreach (Base::config()->databases AS $id => $property) {
+            switch ($property->driver) {
                 case 'mysql':
-                    self::$connects[$key] = new Mysql(new PDO("{$value->driver}:host={$value->host};port={$value->port};dbname={$value->database}", $value->user, $value->password));
+                    self::$connects[$id] = new Mysql(new PDO("{$property->driver}:host={$property->host};port={$property->port};dbname={$property->database}", $property->user, $property->password));
                     break;
                 case 'oci':
-                    self::$connects[$key] = new Oracle(new PDO("{$value->driver}:dbname={$value->database};host={$value->host};port={$value->port}",$value->user,$value->password));
+                    self::$connects[$id] = new Oracle(new PDO("{$property->driver}:dbname={$property->database};host={$property->host};port={$property->port}",$property->user,$property->password));
                 break;
                 
                 default:
-                    self::$connects[$key] = new stdClass();
-                    self::$connects[$key]-> message = "Not found driver {$value->driver}";
+                    self::$connects[$id] = new stdClass();
+                    self::$connects[$id]-> message = "Not found driver {$property->driver}";
                     break;
             }
         }
@@ -33,7 +33,7 @@ class Connections {
     
     public static function get($connection_id) {
         if (key_exists($connection_id, self::$connects)) {
-            return self::$connects[$connection_id];
+            return (object) self::$connects[$connection_id];
         } else {
             return false;
         }
