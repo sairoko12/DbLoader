@@ -203,7 +203,6 @@ class BuilderSql {
 
     public function assemble() {
         if (empty($this->camps) || $this->from === false) {
-            $query = false;
             return false;
         }
 
