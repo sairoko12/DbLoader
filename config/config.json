@@ -7,6 +7,10 @@
             "host" : "127.0.0.1",
             "port" : "8889",
             "database" : "actividades_develop"
+        },
+        "otro" : {
+            "extends" : "system",
+            "database" : "contactos"
         }
     },
     "loader_class" : {

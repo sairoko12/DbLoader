@@ -21,8 +21,6 @@ class AdminDB {
         Connections::register_connections();
     }
     
-    
-    
     public function load($file, $dir) {
         $file = $dir . '/' . strtolower($file) . '.php';
         if (@file_exists($file)) {

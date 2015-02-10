@@ -12,7 +12,7 @@ class Base extends stdClass {
             return self::$config_in;
         }
 
-        self::$config_out = new Base();
+        self::$config_out = new self();
         $dbs = new Databases(self::$config_in['databases']);
         self::$config_out->databases = $dbs->register();
 
