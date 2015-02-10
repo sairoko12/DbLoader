@@ -6,7 +6,7 @@
  *
  */
 
-class BuilderSql {
+class Sql {
     private $camps;
     private $from;
     private $wheres;
@@ -18,51 +18,21 @@ class BuilderSql {
     private $driver;
     protected $db;
     
-    public function __construct(PDO $db) {
-        $this->db = $db;
+    public function __construct(PDO $driver) {
+        $this->setDb($driver);
+        /**$this->db = $db;
         $this->driver = $this->db->getAttribute(PDO::ATTR_DRIVER_NAME);
         
-        /**
+        
          * Aqui se puede agregar nuevos cases para modificar los parametros que necesites para generar tus querys de acuerdo a la base de datos que estes utilizando.
          * Ejemplo: case 'oci': para oracle, case 'ibm': para DB2
-        */
+        
         switch ($this->driver) {
             case 'mysql': default: 
                 $this->wheres = array('and' => array(), 'or' => array());
                 $this->joins = array('inner' => array(), 'left' => array(), 'right' => array(), 'full' => array());
                 break;
-        }
-    }
-    
-    public function fetchAll() {
-        $query = $this->assemble();
-        if ($query) {
-            $sth = $this->db->prepare($query);
-            $sth -> execute();
-            
-            $result = $sth -> fetchAll(PDO::FETCH_OBJ);
-            
-            return (is_array($result)) ? $result : false;
-        }
-
-        return false;
-    }
-
-    public function fetchRow() {
-        $query = $this->assemble();
-        
-        if ($query) {
-            $obj = $this->db->query($query);
-            
-            if (is_object($obj)) {
-                $result = $obj->fetch(PDO::FETCH_OBJ);
-                return (is_object($result)) ? $result : false;
-            }
-            
-            return false;
-        }
-
-        return false;
+        }*/
     }
 
     public function select($camps = array('*')) {
@@ -195,7 +165,7 @@ class BuilderSql {
         $query = "DELETE FROM {$table} WHERE " . implode(' AND ', $this->array_map_assoc(function($k, $v){ return (is_numeric($v)) ? "({$k} = {$v})" : "({$k} = '{$v}')"; }, $data)) . ";";
         
         try {
-            return $this->db->exec($query);
+            return $this->db()->exec($query);
         } catch (PDOException $e) {
             return $e->getMessage();
         }
@@ -209,10 +179,12 @@ class BuilderSql {
         $query = "SELECT " . $this->camps . " FROM " . $this->from . ' ';
 
         //Juntamos JOINS
-        foreach ($this->joins AS $key => $value) {
-            if (count($value)) {
-                for ($i = 0; $i < count($value); $i++) {
-                    $query .= $value[$i] . ' ';
+        if ($this->validJoins()) {
+            foreach ($this->joins AS $key => $value) {
+                if (count($value)) {
+                    for ($i = 0; $i < count($value); $i++) {
+                        $query .= $value[$i] . ' ';
+                    }
                 }
             }
         }
@@ -272,5 +244,37 @@ class BuilderSql {
     
     public function db(){
         return $this->db;
+    }
+    
+    public function isReady(){
+        if (empty($this->from)) {
+            return false;
+        }
+        
+        if ($this->assemble() === '') {
+            return false;
+        }
+        
+        return true;
+    }
+    
+    public function setDb(PDO $driver){
+        $this->db = $driver;
+        return $this;
+    }
+    
+    public function validJoins(){
+        if (count($this->joins) > 1) {
+            $counter = 0;
+            foreach ($this->joins AS $type => $join) {
+                if (count($join) >= 1) {
+                    $counter ++;
+                }
+            }
+            
+            return ($counter <= 0) ? false : true;
+        }
+        
+        return false;
     }
 }

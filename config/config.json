@@ -5,12 +5,8 @@
             "user" : "root",
             "password" : "root",
             "host" : "127.0.0.1",
-            "port" : "3306",
-            "database" : "system"
-        },
-        "testing" : {
-            "extends" : "system",
-            "database" : "testing"
+            "port" : "8889",
+            "database" : "actividades_develop"
         }
     },
     "loader_class" : {
@@ -19,10 +15,9 @@
             "Database"
         ],
         "db" : [
-            "BuilderSql",
+            "Sql",
             "Connections",
-            "Mysql",
-            "Oracle"
+            "Fetch"
         ]
     },
     "settings" : {
