@@ -9,7 +9,10 @@ class Sql {
 
     private $camps;
     private $from;
-    private $wheres;
+    private $wheres = array(
+        'and' => array(),
+        'or' => array()
+    );
     private $limit;
     private $orderBy;
     private $sortBy;
@@ -118,7 +121,7 @@ class Sql {
                 $this->wheres['or'][] = str_replace("?", "'{$wildcard}'", $orWhere);
             }
         }
-
+        //echo '<pre>' . print_r($this->wheres,1) . '</pre>';
         return $this;
     }
 
@@ -288,7 +291,7 @@ class Sql {
 
     public function quickQuery($from, $where = array(), $camps = array(), $extras = array()) {
         $setup = $this->select($camps)->from($from);
-
+        
         if (is_array($where) && !empty($where)) {
             foreach ($where as $k => $w) {
                 if (is_array($w)) {
@@ -323,7 +326,7 @@ class Sql {
                     }
                 }
             }
-        } elseif ($where !== '') {
+        } elseif ($where !== '' && !is_array($where)) {
             $setup->where($where);
         }
 

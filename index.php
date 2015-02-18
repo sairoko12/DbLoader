@@ -13,8 +13,7 @@ $loader->run();
 //-------------------
 
 try {
-    echo '<pre>' . print_r(Fetch::row(Connections::get('system')
-            ->quickQuery('proveedores', 'nombre LIKE "%outbreak%"')),1) .'</pre>';
+    echo '<pre>' . print_r(Fetch::row(Connections::get('system')->quickQuery('proveedores', array(), array('COUNT(*) AS total_proveedores'))),1) .'</pre>';
 } catch (Exception $e) {
     echo $e->getMessage();
 }
