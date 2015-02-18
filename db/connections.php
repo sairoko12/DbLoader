@@ -36,7 +36,25 @@ class Connections {
         }
     }
     
-    public static function get($connection_id) {
+    public static function getDefaultDataBase(){
+        $default = 0;
+        foreach (Base::config()->databases AS $id => $property) {
+            if (isset($property->default)) {
+                if ($property->default == 1) {
+                    $default = $id;
+                    break;
+                }
+            }
+        }
+        
+        return $default;
+    }
+    
+    public static function get($connection_id = false) {
+        if (FALSE === $connection_id) {
+            return (object) self::$connects[self::getDefaultDataBase()];
+        }
+        
         if (key_exists($connection_id, self::$connects)) {
             return (object) self::$connects[$connection_id];
         } else {

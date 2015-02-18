@@ -12,5 +12,5 @@ $loader = new AdminDB();
 $loader->run();
 //-------------------
 
-echo '<pre>' . print_r(Fetch::row(Connections::get('system')->select(array('id_proveedor AS id','nombre AS apodo'))->from('proveedores')->where('id_proveedor = 1')),1) .'</pre>';
-//echo '<pre>' . print_r(Connections::get('agenda')->select()->from('usuarios')->fetchAll(),1) .'</pre>';
+
+echo '<pre>' . print_r(Connections::get()->select()->from('proveedores')->where('id_proveedor = ?', 4)->orWhere('id_usuario like ?', 'que pedo')->where('otro_campo = ?',12)->assemble(),1) .'</pre>';

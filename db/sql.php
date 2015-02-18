@@ -95,13 +95,27 @@ class Sql {
         return $this;
     }
 
-    public function where($where) {
-        $this->wheres['and'][] = $where;
+    public function where($where, $wildcard = null) {
+        if (is_null($wildcard)) {
+            $this->wheres['and'][] = $where;
+        } else {
+            if (FALSE !== strpos($where, '?')) {
+                $this->wheres['and'][] = str_replace("?", "'{$wildcard}'", $where);
+            }
+        }
+            
         return $this;
     }
 
-    public function orWhere($orWhere) {
-        $this->wheres ['or'][] = $orWhere;
+    public function orWhere($orWhere, $wildcard = null) {
+        if (is_null($wildcard)) {
+            $this->wheres['or'][] = $orWhere;
+        } else {
+            if (FALSE !== strpos($orWhere, '?')) {
+                $this->wheres['or'][] = str_replace("?", "'{$wildcard}'", $orWhere);
+            }
+        }
+        
         return $this;
     }
 

@@ -6,9 +6,10 @@
             "password" : "root",
             "host" : "127.0.0.1",
             "port" : "8889",
-            "database" : "actividades_develop"
+            "database" : "actividades_develop",
+            "default" : true
         },
-        "otro" : {
+        "contactos" : {
             "extends" : "system",
             "database" : "contactos"
         }

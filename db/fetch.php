@@ -2,17 +2,16 @@
 
 class Fetch {
     public static function all(Sql $query, $to = true) {
-        if ($query->isReady()) {
-            $sth = $query->db()->prepare($query->assemble());
-            $sth->execute();
-            
+        $obj = $query->db()->query($query->assemble());
+
+        if (is_object($obj)) {
             if (TRUE === $to) {
-                $result = $sth->fetchAll(PDO::FETCH_OBJ);
-            } elseif($to !== '') {
+                $result = $obj->fetchAll(PDO::FETCH_OBJ);
+            } elseif ($to !== '') {
                 // You ca add more case's ;)
                 switch ($to) {
-                    case 'array': default: 
-                        $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+                    case 'array': default:
+                        $result = $obj->fetchAll(PDO::FETCH_ASSOC);
                         break;
                 }
             }
@@ -20,7 +19,7 @@ class Fetch {
             if (is_array($result)) {
                 return $result;
             } else {
-               return false;
+                return false;
             }
         }
 
@@ -28,32 +27,34 @@ class Fetch {
     }
 
     public static function row(Sql $query, $to = true) {
-        if (!$query->isReady()){
-            return false;
-        }
-        
         $obj = $query->db()->query($query->assemble());
 
         if (is_object($obj)) {
             if (TRUE === $to) {
                 $result = $obj->fetch(PDO::FETCH_OBJ);
-            } elseif($to !== '') {
-                // You ca add more case's ;)
+            } elseif ($to !== '') {
+                // You can add more case's ;)
                 switch ($to) {
-                    case 'array': default: 
-                        $result = $obj->fetch();
+                    case 'array': default:
+                        $result = $obj->fetch(PDO::FETCH_ASSOC);
                         break;
                 }
             }
-            
+
             if (is_object($result)) {
                 return $result;
             } else {
-               return false;
+                return false;
             }
         }
 
         return false;
     }
 
+    public static function fromString($query, $db = false) {
+        $db = Connections::get($db);
+
+        $sth = $db->db()->query($query);
+        return $sth->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
