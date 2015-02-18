@@ -12,5 +12,9 @@ $loader = new AdminDB();
 $loader->run();
 //-------------------
 
-
-echo '<pre>' . print_r(Connections::get()->select()->from('proveedores')->where('id_proveedor = ?', 4)->orWhere('id_usuario like ?', 'que pedo')->where('otro_campo = ?',12)->assemble(),1) .'</pre>';
+try {
+    echo '<pre>' . print_r(Fetch::row(Connections::get('system')
+            ->quickQuery('proveedores', 'nombre LIKE "%outbreak%"')),1) .'</pre>';
+} catch (Exception $e) {
+    echo $e->getMessage();
+}

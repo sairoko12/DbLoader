@@ -2,16 +2,12 @@
     "databases" : {
         "system" : {
             "driver" : "mysql",
-            "user" : "root",
-            "password" : "root",
-            "host" : "127.0.0.1",
-            "port" : "8889",
-            "database" : "actividades_develop",
+            "user" : "actiesc3_deploy",
+            "password" : "deploy2015",
+            "host" : "50.115.120.170",
+            "port" : "3306",
+            "database" : "actiesc3_deploy",
             "default" : true
-        },
-        "contactos" : {
-            "extends" : "system",
-            "database" : "contactos"
         }
     },
     "loader_class" : {

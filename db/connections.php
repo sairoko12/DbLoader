@@ -19,8 +19,7 @@ class Connections {
             $connection = false;
             switch ($property->driver) {
                 case 'mysql':
-                    $connection = new PDO("{$property->driver}:host={$property->host};port={$property->port};dbname={$property->database}", $property->user, $property->password);
-                    
+                    $connection = new \PDO("{$property->driver}:host={$property->host};port={$property->port};dbname={$property->database}", $property->user, $property->password);
                     break;
                 case 'oci':
                     $connection = new PDO("{$property->driver}:dbname={$property->database};host={$property->host};port={$property->port}",$property->user,$property->password);
