@@ -22,12 +22,15 @@ class Connections {
                     $connection = new \PDO("{$property->driver}:host={$property->host};port={$property->port};dbname={$property->database}", $property->user, $property->password);
                     break;
                 case 'oci':
-                    $connection = new PDO("{$property->driver}:dbname={$property->database};host={$property->host};port={$property->port}",$property->user,$property->password);
+                    $connection = new \PDO("{$property->driver}:dbname={$property->database};host={$property->host};port={$property->port}",$property->user,$property->password);
                 break;
+                case 'ibm':
+                    $connection = new \PDO("{$property->driver}:DRIVER={IBM DB2 ODBC DRIVER};DATABASE={$property->database};HOSTNAME={$property->host};PORT={$property->port};PROTOCOL=TCPIP;", $property->user, $property->password);
+                    break;
                 
                 default:
                     $connection = new stdClass();
-                    $connection-> message = "Not found driver {$property->driver}";
+                    $connection->message = "Not found driver {$property->driver}";
                     break;
             }
             
@@ -39,7 +42,7 @@ class Connections {
         $default = 0;
         foreach (Base::config()->databases AS $id => $property) {
             if (isset($property->default)) {
-                if ($property->default == 1) {
+                if (intval($property->default) === 1) {
                     $default = $id;
                     break;
                 }

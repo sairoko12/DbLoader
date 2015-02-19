@@ -11,7 +11,7 @@ class Databases extends ArrayIterator {
                 if ($property === 'extends') {
                     if (key_exists($value, $this -> databases)) {
                         foreach ($this->databases[$value] AS $property_extend => $value_extend) {
-                            if ($property_extend != 'default') {
+                            if ($property_extend !== "default") {
                                 $this->databases[$id]->$property_extend = $value_extend;
                             }
                         }
