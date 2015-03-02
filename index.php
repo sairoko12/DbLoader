@@ -10,9 +10,17 @@ require 'loader.php';
 $loader = new AdminDB();
 $loader->run();
 //-------------------
+/*$sql = Connections::get()
+            ->select(array('a.*','x.path'))
+            ->from(array('a' => 'actividades'))
+            ->innerJoin(array('x' => 'imagenes_actividades'), 'a.imagen_predeterminada = x.id_imagen_actividad')
+            ->where('a.promocion = ?',1)
+            ->where('a.status IN(?)', array(1,2));*/
+
+$sql = Connections::get()->select()->from('agenda');
 
 try {
-    echo '<pre>' . print_r(Fetch::row(Connections::get()->quickQuery('proveedores', array(), array('COUNT(*) AS total_proveedores'))),1) .'</pre>';
+    echo '<pre>' . print_r(Fetch::all($sql),1) .'</pre>';
 } catch (Exception $e) {
     echo $e->getMessage();
 }

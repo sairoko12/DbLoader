@@ -5,6 +5,7 @@
  * please read more about the PDO in the next link: http://php.net/manual/es/class.pdo.php
  *
  */
+
 class Sql {
 
     private $camps;
@@ -104,10 +105,15 @@ class Sql {
     public function where($where, $wildcard = null) {
         if (is_null($wildcard)) {
             $this->wheres['and'][] = $where;
-        } else {
+        } elseif(!is_array($wildcard)) {
             if (FALSE !== strpos($where, '?')) {
                 $this->wheres['and'][] = str_replace("?", "'{$wildcard}'", $where);
             }
+        } elseif (is_array($wildcard)) {
+            $clean = implode(',', $this->array_map_assoc(function($k, $v) {
+                            return "'{$v}'";
+                        }, $wildcard));
+            $this->wheres['and'][] = str_replace("?", $clean, $where);
         }
 
         return $this;
@@ -289,7 +295,7 @@ class Sql {
         return $this;
     }
 
-    public function quickQuery($from, $where = array(), $camps = array(), $extras = array()) {
+    public function quickQuery($from, $camps = array(), $where = array(), $extras = array()) {
         $setup = $this->select($camps)->from($from);
         
         if (is_array($where) && !empty($where)) {
