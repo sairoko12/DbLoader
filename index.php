@@ -17,10 +17,13 @@ $loader->run();
             ->where('a.promocion = ?',1)
             ->where('a.status IN(?)', array(1,2));*/
 
-$sql = Connections::get()->select()->from('agenda');
+$sql = Connections::get()
+        ->quickQuery('actividades','nombre_actividad','id_actividad = 12');
 
 try {
-    echo '<pre>' . print_r(Fetch::all($sql),1) .'</pre>';
+    $arr = Fetch::row($sql)->nombre_actividad;
+    
+    echo '<pre>'.print_r($arr,1).'</pre>';
 } catch (Exception $e) {
     echo $e->getMessage();
 }

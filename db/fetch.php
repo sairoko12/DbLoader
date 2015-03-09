@@ -1,17 +1,23 @@
 <?php
 
 class Fetch {
-    public static function all(Sql $query, $to = true) {
+    const MODE_OBJECT = 1;
+    const MODE_ARRAY = 2;
+    
+    public static function all(Sql $query, $to = self::MODE_OBJECT) {
         $obj = $query->db()->query($query->assemble());
 
         if (is_object($obj)) {
-            if (TRUE === $to) {
+            if (1 === $to) {
                 $result = $obj->fetchAll(PDO::FETCH_OBJ);
-            } elseif ($to !== '') {
+            } else {
                 // You ca add more case's ;)
                 switch ($to) {
-                    case 'array': default:
+                    case 2:
                         $result = $obj->fetchAll(PDO::FETCH_ASSOC);
+                        break;
+                    default:
+                        $result = $obj->fetchAll($to);
                         break;
                 }
             }
@@ -26,22 +32,26 @@ class Fetch {
         return false;
     }
 
-    public static function row(Sql $query, $to = true) {
+    public static function row(Sql $query, $to = self::MODE_OBJECT) {
         $obj = $query->db()->query($query->assemble());
 
         if (is_object($obj)) {
-            if (TRUE === $to) {
+            if (1 === $to) {
                 $result = $obj->fetch(PDO::FETCH_OBJ);
-            } elseif ($to !== '') {
+            } else {
                 // You can add more case's ;)
                 switch ($to) {
-                    case 'array': default:
+                    case 2:
                         $result = $obj->fetch(PDO::FETCH_ASSOC);
                         break;
+                    default: 
+                        $result = $obj->fetch($to);
+                        break;
                 }
+                return $result;
             }
 
-            if (is_object($result)) {
+            if (is_object($result) || is_array($result)) {
                 return $result;
             } else {
                 return false;

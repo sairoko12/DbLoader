@@ -24,19 +24,6 @@ class Sql {
 
     public function __construct(PDO $driver) {
         $this->setDb($driver);
-        /*         * $this->db = $db;
-          $this->driver = $this->db->getAttribute(PDO::ATTR_DRIVER_NAME);
-
-
-         * Aqui se puede agregar nuevos cases para modificar los parametros que necesites para generar tus querys de acuerdo a la base de datos que estes utilizando.
-         * Ejemplo: case 'oci': para oracle, case 'ibm': para DB2
-
-          switch ($this->driver) {
-          case 'mysql': default:
-          $this->wheres = array('and' => array(), 'or' => array());
-          $this->joins = array('inner' => array(), 'left' => array(), 'right' => array(), 'full' => array());
-          break;
-          } */
     }
 
     public function select($camps = array()) {
@@ -122,12 +109,17 @@ class Sql {
     public function orWhere($orWhere, $wildcard = null) {
         if (is_null($wildcard)) {
             $this->wheres['or'][] = $orWhere;
-        } else {
+        } elseif(!is_array($wildcard)) {
             if (FALSE !== strpos($orWhere, '?')) {
                 $this->wheres['or'][] = str_replace("?", "'{$wildcard}'", $orWhere);
             }
+        } elseif (is_array($wildcard)) {
+            $clean = implode(',', $this->array_map_assoc(function($k, $v) {
+                            return "'{$v}'";
+                        }, $wildcard));
+            $this->wheres['or'][] = str_replace("?", $clean, $orWhere);
         }
-        //echo '<pre>' . print_r($this->wheres,1) . '</pre>';
+        
         return $this;
     }
 
@@ -161,7 +153,7 @@ class Sql {
         return $this->db()->lastInsertId();
     }
 
-    public function array_map_assoc($callback, $array) {
+    private function array_map_assoc($callback, $array) {
         $r = array();
 
         foreach ($array as $key => $value) {
@@ -295,7 +287,7 @@ class Sql {
         return $this;
     }
 
-    public function quickQuery($from, $camps = array(), $where = array(), $extras = array()) {
+    public function quickQuery($from, $camps = array(), $where = array()) {
         $setup = $this->select($camps)->from($from);
         
         if (is_array($where) && !empty($where)) {
